@@ -1,0 +1,72 @@
+/* Animation for the modal floating from bottom to center */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation for the modal floating from center to bottom */
+@keyframes floatOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/* Background fade in animation */
+@keyframes backgroundFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Background fade out animation */
+@keyframes backgroundFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modalEnter {
+  animation: floatIn 0.3s ease-out forwards;
+}
+
+.modalExit {
+  animation: floatOut 0.3s ease-out forwards;
+}
+
+.backgroundEnter {
+  animation: backgroundFadeIn 0.3s ease-out forwards;
+}
+
+.backgroundExit {
+  animation: backgroundFadeOut 0.3s ease-out forwards;
+}
+
+/* Hover effects for the close button */
+.modalClose:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: rgb(220, 38, 38);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effects for the modal content */
+.modalContent:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease-in-out;
+}

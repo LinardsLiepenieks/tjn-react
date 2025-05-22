@@ -1,0 +1,141 @@
+  Lesson 1: Advanced React Patterns & State Management
+
+  Topic: Managing complex state with Context API and custom hooks
+
+  Exercises:
+  1. Refine CalendarEventContext: Enhance the context with loading/error states and pagination.
+  // Add to CalendarEventContext
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  2. Create custom hooks: Build 2-3 custom hooks like useCalendarNavigation for handling month changing.
+  // Create in src/hooks/useCalendarNavigation.ts
+  export const useCalendarNavigation = () => {
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const nextMonth = () => {
+      setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
+
+    const previousMonth = () => {
+      setCurrentDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    return { currentDate, nextMonth, previousMonth };
+  };
+  3. Implement month navigation: Add previous/next month navigation buttons to calendar header.
+
+  Lesson 2: Advanced UI Features & Form Handling
+
+  Topic: Creating interactive UI components with forms
+
+  Exercises:
+  1. Enhance EventForm: Improve with form validation and better UX.
+  // Add form validation
+  const [errors, setErrors] = useState({
+    title: '',
+    description: ''
+  });
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {...errors};
+
+    if (!title.trim()) {
+      newErrors.title = 'Title is required';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+  2. Create DatePicker component: Build a custom date picker or integrate a library.
+  3. Add recurring events: Update your data model and UI to support recurring events (daily, weekly, monthly).
+  // Extend CalendarEvent type
+  export interface RecurringEvent extends BaseCalendarEvent {
+    type: 'recurring';
+    startDate: Date;
+    endDate: Date | null;
+    frequency: 'daily' | 'weekly' | 'monthly';
+    interval: number;
+  }
+
+  Lesson 3: API Integration & Error Handling
+
+  Topic: Working with APIs and handling errors gracefully
+
+  Exercises:
+  1. Implement event search: Create a search feature with API endpoint.
+  // Server-side endpoint
+  router.get('/search', async (req, res) => {
+    try {
+      const { query } = req.query;
+      const events = await CalendarEvent.find({
+        $or: [
+          { title: { $regex: query, $options: 'i' } },
+          { description: { $regex: query, $options: 'i' } }
+        ]
+      });
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  2. Add optimistic updates: Implement optimistic UI updates for better user experience.
+  // In CalendarEventContext
+  const deleteEvent = async (id) => {
+    // Optimistically update UI
+    const previousEvents = [...events];
+    setEvents(events.filter(event => event.id !== id));
+
+    try {
+      await fetch(`${process.env.REACT_APP_SERVER}/calendarEvents/${id}`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      // Revert on error
+      setEvents(previousEvents);
+      console.error('Failed to delete event:', error);
+    }
+  };
+  3. Create error boundary: Implement a global error boundary component.
+
+  Lesson 4: Performance Optimization & Testing
+
+  Topic: Optimizing React applications and writing tests
+
+  Exercises:
+  1. Memoize expensive calculations: Optimize rendering with React.memo and useMemo.
+  // In CalendarGrid component
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => a.date - b.date);
+  }, [events]);
+  2. Implement lazy loading: Use React.lazy for code splitting.
+  // In App.tsx
+  const Calendar = React.lazy(() => import('./pages/Calendar'));
+  const EventModal = React.lazy(() => import('./components/EventModal'));
+
+  // Then in component
+  <Suspense fallback={<div>Loading...</div>}>
+    <Calendar />
+  </Suspense>
+  3. Write unit tests: Create tests for important components using Jest and React Testing Library.
+  // In EventModal.test.tsx
+  test('displays event details correctly', () => {
+    const mockEvent = {
+      id: 1,
+      title: 'Test Event',
+      description: 'Test Description',
+      type: 'single',
+      date: new Date(2023, 5, 15),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    render(<EventModal event={mockEvent} onClose={() => {}} />);
+
+    expect(screen.getByText('Test Event')).toBeInTheDocument();
+    expect(screen.getByText('Test Description')).toBeInTheDocument();
+  });
+
+  Each lesson builds on the previous one, gradually enhancing your calendar application with more advanced features. The final
+  deployment lesson would then package everything up for production.
